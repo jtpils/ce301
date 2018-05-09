@@ -105,7 +105,8 @@ void Building::drawBoxTextured(const Vec3& min, const Vec3& max, double maxW, do
 	double height = (max.z - min.z) / levels;
 
 	double textureRatio = w/maxW;
-
+	
+	// Draw front face
 	glBegin(GL_POLYGON);	
 	glTexCoord2f(textureRatio, 0.0);	glVertex3f(max.x, min.y, min.z);
 	glTexCoord2f(0.0, 0.0);				glVertex3f(min.x, min.y, min.z);
@@ -113,6 +114,7 @@ void Building::drawBoxTextured(const Vec3& min, const Vec3& max, double maxW, do
 	glTexCoord2f(textureRatio, height);	glVertex3f(max.x, min.y, max.z);
 	glEnd();
 
+	// Draw back face
 	glBegin(GL_POLYGON);
 	glTexCoord2f(textureRatio, height);	glVertex3f(max.x, max.y, max.z);
 	glTexCoord2f(0.0, height);			glVertex3f(min.x, max.y, max.z);
@@ -120,6 +122,7 @@ void Building::drawBoxTextured(const Vec3& min, const Vec3& max, double maxW, do
 	glTexCoord2f(textureRatio, 0.0);	glVertex3f(max.x, max.y, min.z);
 	glEnd();
 
+	// Draw right side
 	textureRatio = d/maxD;
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0.0, 0.0);				glVertex3f(max.x, min.y, min.z);
@@ -128,6 +131,7 @@ void Building::drawBoxTextured(const Vec3& min, const Vec3& max, double maxW, do
 	glTexCoord2f(textureRatio, 0.0);	glVertex3f(max.x, max.y, min.z);
 	glEnd();
 	
+	// Draw left side
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0.0, 0.0);				glVertex3f(min.x, max.y, min.z);
 	glTexCoord2f(0.0, height);			glVertex3f(min.x, max.y, max.z);
@@ -136,20 +140,27 @@ void Building::drawBoxTextured(const Vec3& min, const Vec3& max, double maxW, do
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
+	
 	// Roof
+	glEnable(GL_COLOR_MATERIAL);
+    glBegin(GL_POLYGON); 
+    
+    glColor3f(0.2f,0.2f,0.2f);
 
-    glBegin(GL_POLYGON);
+    
     glVertex3f(max.x, min.y, max.z);
 	glVertex3f(min.x, min.y, max.z);
 	glVertex3f(min.x, max.y, max.z);
 	glVertex3f(max.x, max.y, max.z);
 	glEnd();
+	glDisable(GL_COLOR_MATERIAL);
+	
 	glEnable(GL_TEXTURE_2D);
 
 }
 
-// Will draw a box with no bottom for sidewalk
-// The box will have the sides and side textured
+// Will draw a box with 0.1 height for sidewalk
+// The box will have be textured
 void Building::drawSidewalk()
 {
 	double w,d;
@@ -157,14 +168,16 @@ void Building::drawSidewalk()
 	glBindTexture(GL_TEXTURE_2D, sidewalk.id);
 	w = (width / 2.0) + 0.2;
 	d = (depth / 2.0) + 0.2;
-
+	
+	// top layer
 	glBegin(GL_POLYGON);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(w, d, 0.1);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(w, -d, 0.1);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(-w, -d, 0.1);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(-w, d, 0.1);
 	glEnd();
-
+	
+	// back face
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(-w, d, 0.0);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(w, d, 0.0);
@@ -172,6 +185,7 @@ void Building::drawSidewalk()
 	glTexCoord2f(0.0, 0.2/w);	glVertex3f(-w, d, 0.1);
 	glEnd();
 
+	// front face
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(-w, -d, 0.0);
 	glTexCoord2f(0.0, 0.2/w);	glVertex3f(-w, -d, 0.1);
@@ -179,6 +193,7 @@ void Building::drawSidewalk()
 	glTexCoord2f(1.0, 0.0);		glVertex3f(w, -d, 0.0);
 	glEnd();
 
+	// left side
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(-w, -d, 0.0);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(-w, d, 0.0);
@@ -186,6 +201,7 @@ void Building::drawSidewalk()
 	glTexCoord2f(0.2/d, 0.0);	glVertex3f(-w, -d, 0.1);
 	glEnd();
 
+	// right side
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(w, -d, 0.0);
 	glTexCoord2f(0.2/d, 0.0);	glVertex3f(w, -d, 0.1);
@@ -302,11 +318,17 @@ void Building::generateStandard()
 	double d = (depth / 2) - ((rand() % (depth / 2)) + 1) / 2;
 	generateWindows(w >= d ? w*2 : d*2, levels);
 
+	// Create quadric shape
 	GLUquadric *qobj = gluNewQuadric();
-	gluQuadricNormals( qobj, GL_TRUE );
-	glNewList( id, GL_COMPILE );
+	// Generation of a normal, for every vertex for qobj
+	gluQuadricNormals( qobj, GLU_SMOOTH );
+	
+	// Create display list and compile commands
+	glNewList( id, GL_COMPILE ); 
+	
+	//Enable texturing and bind texture
 	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); // RGB values will be RGB 
 	glBindTexture(GL_TEXTURE_2D, windows.id);
 
 	Vec3 min = Vec3(-w, -d, 0);
@@ -322,14 +344,15 @@ void Building::generateStandard()
 
 	Vec3 center(0, 0, 0);
 
-	glPushMatrix();
-	glMultMatrix(Trans4x4(0, 0, levels));
-	glMultMatrix(X_Rotate4x4(180));
-	drawDish(center, 5, 12, 0, 0, PI, -PI/2, PI/2);
-	glPopMatrix();
+	// Push and pop matrix stack
+	glPushMatrix();	// Set current matrix
+	glMultMatrix(Trans4x4(0, 0, levels));	// Transformation
+	glMultMatrix(X_Rotate4x4(180));			// Transformation2: rotation
+	drawDish(center, 5, 12, 0, 0, PI, -PI/2, PI/2);	
+	glPopMatrix();	// Pop old matrix without transformations
 
 	glEndList();
-	gluDeleteQuadric( qobj );
+	gluDeleteQuadric( qobj ); // Destroy object to free memory
 }
 
 // Stacked building generation
@@ -629,7 +652,19 @@ void Building::generateBlocks()
 
 void Building::generateNone()
 {
-    drawSidewalk();
+    
+
+	GLUquadric *qobj = gluNewQuadric();
+	gluQuadricNormals( qobj, GL_TRUE );
+	glNewList( id, GL_COMPILE );
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glBindTexture(GL_TEXTURE_2D, windows.id);
+
+	drawSidewalk();
+	glDisable(GL_TEXTURE_2D);
+	glEndList();
+	gluDeleteQuadric( qobj );
 }
 
 // Generate texture for windows

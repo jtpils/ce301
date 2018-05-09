@@ -55,7 +55,7 @@ void buildCity()
 			    buildDepth = BUILD_DEPTH + rand() % 5;
 			}
 			
-			if (choice < 25)
+			if (choice < 5)
 			{
 				city.push_back(Building(BLOCKS, buildWidth, buildDepth, Trans4x4(i, j), bID));
 			}
@@ -63,11 +63,11 @@ void buildCity()
 			{
 				city.push_back(Building(STATE, buildWidth, buildDepth, Trans4x4(i, j), bID));
 			}
-			else if (choice < 50)
+			else if (choice < 35)
 			{
 				city.push_back(Building(MODERN, buildWidth, buildDepth, Trans4x4(i, j), bID));
 			}
-			else if (choice < 60)
+			else if (choice < 45)
 			{
 				city.push_back(Building(NONE, buildWidth, buildDepth, Trans4x4(i, j), bID));
 			}
@@ -279,6 +279,13 @@ void key_press( unsigned char key, int x, int y )
 				glPolygonMode(GL_BACK, GL_FILL);
 			}
 			break;
+		case 'c':
+		case 'C':
+			glClearColor(0.90, 0.90, 0.90, 0.0 ); // clear window.
+			// Rebuild city
+			sky = Skybox(Vec3(-CITY_WIDTH/2, -CITY_WIDTH/2, -CITY_WIDTH/2), Vec3(3*CITY_WIDTH/2, 3*CITY_WIDTH/2, 3*CITY_WIDTH/2));
+			buildCity();
+			break;
 		case 'q':
 		case 'Q':
 			exit(0);
@@ -353,11 +360,11 @@ int main( int argc, char** argv )
 	glEnable( GL_DEPTH_TEST ); // Turn on depth buffering.
 
 	// Adjust light reflection/shininess and ambient based on material
-//	float mat_ambient[] = {0.02f, 0.02f, 0.02f,  1.0f};
-//      float mat_diffuse[] = {0.10f, 0.10f, 0.10f, 1.0f};
+	float mat_ambient[] = {0.02f, 0.02f, 0.02f,  1.0f};
+    	float mat_diffuse[] = {0.10f, 0.10f, 0.10f, 1.0f};
 
-//	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT , mat_ambient );
-//	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE,mat_ambient );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT , mat_ambient );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE,mat_ambient );
 
 	glMaterial( GL_AMBIENT  , Color(0.02,0.02,0.02) );
 	glMaterial( GL_DIFFUSE  , Color(0.1,0.1,0.1) );

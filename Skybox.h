@@ -100,7 +100,7 @@ Skybox::Skybox(Vec3 mn, Vec3 mx)
 	min = mn;
 	max = mx;
 	int randomDay = rand() % 100;
-	if (randomDay < 40) {
+	if (randomDay < 50) {
 	stars = Texture(STARS_TEXTURE, SKY_BOX_TOP, SKYBOX_SIDES, SKYBOX_SIDES);
 	side = Texture(SIDE_TEXTURE, SKY_BOX_SIDE, SKYBOX_SIDES, SKYBOX_SIDES);
 	bottom = Texture(BOTTOM_TEXTURE, SKY_BOX_BOTTOM, 2, 2);

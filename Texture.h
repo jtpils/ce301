@@ -17,11 +17,8 @@
 #define WINDOW_WIDTH 8
 #define WINDOW_BEZEL 2
 
-//Sidewalk Texture
-#define CRACK_INTER 8
-
 //Random Color Variance Range
-#define COLOR_RANGE 40
+#define COLOR_RANGE 30
 
 //Lights
 #define UNLIT 10
@@ -71,7 +68,6 @@ private:
 	void createNightGradient();
 	void createNightStars();
 	void createNightBottom();
-
 	
 	void pourSidewalk();
 	void createGLTexture();
@@ -159,8 +155,8 @@ void Texture::createGLTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
-	// SHOULD I STILL DO MIPMAPPING ? ?? ? 
-	// LOOKS GOOD FROM FAR BUT BLUR WHEN ZOOMED IN ?? ? 
+	// SHOULD I STILL DO MIPMAPPING ?
+	// LOOKS GOOD FROM FAR BUT BLUR WHEN ZOOMED IN 
 	if(MIPMAP && !skybox())
 	{
 		// repeat the pixels in the edge of the texture to 1px wide line at the edge
@@ -203,7 +199,17 @@ void Texture::colorWindow(int xOffset, int yOffset)
 	int yStart = yOffset * WINDOW_WIDTH;
 	int xPos, yPos;
 	GLubyte color = randomWindowColor();
+	GLubyte buildingCol = 0;
 	GLubyte randMod;
+	bool day = false;
+	
+	int randomCol = rand() % 100;
+	if (randomCol < 50) {
+		buildingCol = 15;
+		day = true;
+	}
+		
+
 	for(int row = 0; row < WINDOW_HEIGHT; row++)
 	{
 		for(int col = 0; col < WINDOW_WIDTH; col++)
@@ -212,21 +218,21 @@ void Texture::colorWindow(int xOffset, int yOffset)
 			yPos = yStart + col;
 			if(row % WINDOW_HEIGHT < WINDOW_BEZEL)
 			{
-				setGreyscale(xPos, yPos, width, (GLubyte) 0, true);
+				setGreyscale(xPos, yPos, width, (GLubyte) buildingCol, day);
 			}
 			else if(row % WINDOW_HEIGHT >= WINDOW_HEIGHT - WINDOW_BEZEL)
 			{
-				setGreyscale(xPos, yPos, width, (GLubyte) 0, true);
+				setGreyscale(xPos, yPos, width, (GLubyte) buildingCol, day);
 			}
 			else
 			{
 				if(col % WINDOW_WIDTH < WINDOW_BEZEL)
 				{
-					setGreyscale(xPos, yPos, width, (GLubyte) 10, true);
+					setGreyscale(xPos, yPos, width, (GLubyte) buildingCol, day);
 				}
 				else if(col % WINDOW_WIDTH >= WINDOW_WIDTH - WINDOW_BEZEL)
 				{
-					setGreyscale(xPos, yPos, width, (GLubyte) 10, true);
+					setGreyscale(xPos, yPos, width, (GLubyte) buildingCol, day);
 				}
 				else
 				{
@@ -247,21 +253,9 @@ void Texture::pourSidewalk()
 	{
 		for(unsigned int col = 0; col < width; col++)
 		{
-//			if((row % CRACK_INTER) == 0 && row != 0)
-//			{
-//				setGreyscale(row, col, width, (GLubyte) 10, false);
-//			}
-//			else
-//			{
-//				if((col % CRACK_INTER) == 0 && col != 0)
-//				{
-//					setGreyscale(row, col, width, (GLubyte) 10, false);
-//				}
-//				else
-//				{
-					setGreyscale(row, col, width, randomSidewalkColor(), false);
-//				}
-//			} 
+
+			setGreyscale(row, col, width, randomSidewalkColor(), false);
+ 
 		}
 	}
 }
@@ -269,6 +263,7 @@ void Texture::pourSidewalk()
 void Texture::createSkyGradient()
 {
     int cloud = 997;
+   
 	for(unsigned int row = 0; row < height; row++)
 	{
 		for(unsigned int col = 0; col < width; col++)
@@ -297,6 +292,7 @@ void Texture::createSkyGradient()
 
 void Texture::createSkyBottom()
 {
+
 	for(unsigned int row = 0; row < height; row++)
 	{
 		for(unsigned int col = 0; col < width; col++)
@@ -430,10 +426,10 @@ Texture::Texture(GLuint name, TextureType type, unsigned int w, unsigned int h)
 		createNightStars();
 		break;
 	case NIGHT_BOX_SIDE:
-		createNightGradient();
+   		createNightGradient();
 		break;
 	case NIGHT_BOX_BOTTOM:
-		createNightBottom();
+   		createNightBottom();
 		break;
 	}
 	createGLTexture();

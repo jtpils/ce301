@@ -1,9 +1,9 @@
 
-#define CITY_WIDTH 2046
-#define CITY_DEPTH 2046
-#define BUILD_WIDTH 16
-#define BUILD_DEPTH 16
-#define STREET_WIDTH 18
+#define CITY_WIDTH 2846
+#define CITY_DEPTH 2846
+#define BUILD_WIDTH 18
+#define BUILD_DEPTH 18
+#define STREET_WIDTH 30
 
 #include "Building.h"
 #include "Skybox.h"
